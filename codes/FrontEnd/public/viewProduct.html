@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <!------------------ Navbar ---------------------->
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">SP IT!</span>
+            <div class="container-fluid">
+                <ul class="navbar-nav ">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navBarDropdown" role="button" data-toggle="dropdown">
+                            Category
+                        </a>
+                        <div>
+                            <ul class="dropdown-menu" aria-labelledby="navBarDropdown" id="categories">
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/products/" class="nav-link">Products</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="justify-content-end container-fluid">
+            <ul class="navbar-nav">
+                <li class="nav-item" id="profile"></li>
+                <li class="nav-item" id="logged"></li>
+            </ul>
+        </div>
+        <form class="d-flex mb-0 justify-content-end" style="width: 30vw;" id="Search">
+            <select class="form-control" id="brands" name="brands" style="width:7vw; border-radius: 0;">
+                <option>Brand</option>
+            </select>
+            <input class="form-control" type="search" placeholder="Search" id="contents"
+                style="width:22vw; border-radius: 0;" autocomplete="off">
+            <button class="btn btn-success" type="submit" style="border-radius: 0;">Search</button>
+        </form>
+    </nav>
+
+    <!-- View Product -->
+    <div class="mt-3 row w-100" style="height: 95vh">
+        <div class="col-lg-6 h-100">
+            <img class="ml-2 img-fluid"src="/images/laptop_image.jpg" alt="Product Image" style="height: 93%;">
+        </div>
+        <div class="m-0 col-lg-6 shadow-sm p-3 mb-5 bg-white rounded">
+            <div class="mt-5 d-flex flex-column ">
+                <h1 class="ml-2 my-2 font-weight-light" id="pdtTitle"></h1>
+                <h2 class="m-xl-2 my-2 text-danger">$<p class="d-inline" id="pdtPrice"></p>
+                </h2>
+                <div>
+                    <h5 class="ml-2 mt-3">Average Rating: <p class="d-inline" id="avgRating"></p>
+                    </h5>
+                    <div id="addReviewbtn">
+                        <button class="ml-2 mt-2 btn btn-success" type="button" data-toggle="modal"
+                            data-target="#formModal">Add a review</button>
+                    </div>
+                </div>
+                <h6 class="ml-2 mt-5">Product Specs: </h6>
+                <ul style="list-style-type: none; ">
+                    <li>Screensize: <p class="font-weight-bold d-inline" id="screensize"></p>
+                    </li>
+                    <li>Processor: <p class="font-weight-bold d-inline" id="processor"></p>
+                    </li>
+                    <li>Memory: <p class="font-weight-bold d-inline" id="memory"></p>
+                    </li>
+                    <li>Storage: <p class="font-weight-bold d-inline" id="storage"></p>
+                    </li>
+                    <li>Operating System(OS): <p class="font-weight-bold d-inline" id="os"></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Modal -->
+    <div class="modal" id="formModal">
+        <div class="modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <form class="p-3" id="addReview">
+                    <div class="form-group">
+                        <label for="rating">Rating: </label>
+                        <input type="number" class="form-control" id="rating">
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Review </label>
+                        <textarea class="form-control" rows="3" id="review"></textarea>
+                    </div>
+                    <button class="btn btn-success" type="submit">Add Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Reviews -->
+    <div class="container-fluid">
+        <h2 class="mt-3">Member Reviews: (<p class="d-inline" id="reviewCount"></p>)</h2>
+        <div id="memberReview"></div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        const baseURL = "http://localhost:3000";
+        const params = new URLSearchParams(window.location.search);
+
+        const token = localStorage.getItem("token");
+        const loggedInUser = parseInt(localStorage.getItem("loggedInUserID"));
+        const role = localStorage.getItem("userRole");
+
+        const headerConfig = {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        }
+
+        // these buttons will appear under certain conditions
+        if (token != null || !(isNaN(loggedInUser)) || role != null) {
+
+            // if role is Admin
+            if (role == "Admin") {
+                const addCategory = `
+                    <div class="dropdown-divider"></div>
+                    <li><a class="dropdown-item" href="/category/add">Add Category</a></li>
+                `
+
+                $("#categories").append(addCategory);
+            }
+
+            // if role is member / admin
+            const signOut = `
+                <a type="button" id="signOut" class="nav-link btn btn-dark">Log Out</a>
+            `
+
+            const profile = `
+                <a class="nav-link" href="/profile">Profile</a>
+            `
+
+
+            $("#profile").append(profile);
+            $("#logged").append(signOut);
+        }
+        else if (token == null || isNaN(loggedInUser) || role == null) {
+            const logInBtn = `
+                <a class="nav-link" href="/login">Log In</a>
+            `
+
+            $("#logged").append(logInBtn);
+        }
+
+
+        // redirects user to login to add review
+        $("#addReviewbtn").click(() => {
+            if (token == null || isNaN(loggedInUser) || role == null) {
+                window.location.href = "/login";
+            }
+        })
+        // =======================
+        // NAVBAR REQUESTS
+        // =======================
+        // shows category in dropdown 
+        axios.get(`${baseURL}/category`)
+            .then((res) => {
+                const categoryArr = res.data
+                categoryArr.forEach((category) => {
+                    const categories = `
+            <li><a class="dropdown-item" href="/category?catId=${category.categoryid}">${category.category}</a></li>
+            `
+                    $("#categories").prepend(categories)
+                });
+            })
+            .catch((err) => {
+                console.log("Error");
+                console.log(err);
+            })
+
+        // gets all distinct brands for select dropdown
+        axios.get(`${baseURL}/brands`)
+            .then((res) => {
+                const productArr = res.data
+                productArr.forEach((product) => {
+                    const productBrand = `
+                    <option value="${product.brand}" >${product.brand}</option>
+                    `
+
+                    $("#brands").append(productBrand);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log("error in operando")
+            })
+
+
+        // search bar
+        $(document).ready((event) => {
+            $("#Search").submit((event) => {
+                const brand = $("#brands").val();
+                const contents = $("#contents").val();
+
+                let redirectURL = `http://localhost:3001/search?brand=${brand}&content=${contents}`
+
+                window.location.assign(redirectURL);
+
+                return false;
+            });
+
+            // logout button 
+            $("#signOut").click(() => {
+                localStorage.clear();
+                location.reload();
+                window.location.href("/");
+            })
+        })
+
+        // =======================
+        // Product Info
+        // =======================
+
+        // gets info of product from PdtID
+        const productId = params.get("productId");
+        
+        axios.get(`${baseURL}/product/view/${productId}`)
+            .then((res) => {
+                const productInfo = res.data;
+
+                $("#pdtTitle").html(productInfo.name);
+                $("#pdtPrice").html(productInfo.price);
+                $("#screensize").html(productInfo.screensize);
+                $("#processor").html(productInfo.processor);
+                $("#memory").html(productInfo.memory);
+                $("#storage").html(productInfo.storage);
+                $("#os").html(productInfo.os);
+
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log("Error in operation");
+            })
+
+        // =======================
+        // Show Reviews
+        // =======================
+        // get and shows review
+        axios.get(`${baseURL}/product/${productId}/review`)
+            .then((res) => {
+                const reviewArr = res.data;
+                reviewArr.forEach((review) => {
+                    const showReviews = `
+                        <div class="mt-2 float-left col-lg-11 container border shadow p-3 mb-5 bg-white rounded">
+                            <h6>${review.username}</h6>
+                            <h6>Rating: ${review.rating}</h6>
+                            <h6>Review: </h6>
+                            <div class="m-0 container border">
+                                <p>${review.review}</p>
+                            </div>
+                        </div>
+                    `
+                    $("#memberReview").prepend(showReviews);
+                })
+
+                $("#reviewCount").html(reviewArr.length);
+            })
+            .catch((err) => {
+                const errResponse = `
+                <h6 class="font-italic font-weight-normal">No reviews!</h6>
+                `
+                $("#memberReview").html()
+            })
+
+        // calculates and show avg review
+        axios.get(`${baseURL}/product/${productId}/review`)
+            .then((res) => {
+                const reviewArr = res.data;
+                let avgReview = 0;
+                if (reviewArr.length > 0) {
+                    reviewArr.forEach((review) => {
+                        avgReview += review.rating;
+
+                        $("#avgRating").html((avgReview / reviewArr.length).toFixed(1));
+                    })
+                }
+                else {
+                    $("#avgRating").html(0);
+                }
+
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log("Error");
+            })
+
+        // =======================
+        // Add Review
+        // =======================
+
+        $("#addReview").submit((event) => {
+            event.preventDefault();
+
+            const userid = loggedInUser;
+            const rating = $("#rating").val();
+            const review = $('#review').val();
+
+            const requestBody = {
+                userid: userid,
+                rating: rating,
+                review: review
+            }
+
+            axios.post(`${baseURL}/product/${productId}/review`, requestBody, headerConfig)
+                .then((res) => {
+                    axios.get(`${baseURL}/product/${productId}/review`)
+                        .then((res) => {
+                            // resets form value
+                            $("#addReview").val("");
+
+                            // shows added review
+                            const reviewArr = res.data;
+                            reviewArr.forEach((review) => {
+                                const showReviews = `
+                                    <div class="mt-2 float-left col-lg-11 container border shadow p-3 mb-5 bg-white rounded">
+                                        <h6>${review.username}</h6>
+                                        <h6>Rating: ${review.rating}</h6>
+                                        <h6>Review: </h6>
+                                        <div class="m-0 container border">
+                                            <p>${review.review}</p>
+                                        </div>
+                                    </div>
+                                `
+                                $("#memberReview").prepend(showReviews);
+                            })
+
+                            // shows number of review
+                            $("#reviewCount").html(reviewArr.length);
+
+                            // closes form modal on submission
+                            $("#formModal").modal("hide");
+                        })
+
+                        .catch((err) => {
+                            const errResponse = `
+                                <h6 class="font-italic font-weight-normal">No reviews!</h6>
+                            `
+                            $("#memberReview").html(errResponse)
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                    console.log("error");
+                })
+        })
+
+
+    </script>
+</body>
+
+</html>

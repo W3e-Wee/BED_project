@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" src="../css/styles.css" type="text/css">
+    <title>Document</title>
+</head>
+
+<body>
+    <!------------------ Navbar ---------------------->
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">SP IT!</span>
+            <div class="container-fluid">
+                <ul class="navbar-nav ">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navBarDropdown" role="button" data-toggle="dropdown">
+                            Category
+                        </a>
+                        <div>
+                            <ul class="dropdown-menu" aria-labelledby="navBarDropdown" id="categories">
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/products/" class="nav-link">Products</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="justify-content-end container-fluid">
+            <ul class="navbar-nav">
+                <li class="nav-item" id="profile"></li>
+                <li class="nav-item" id="logged"></li>
+            </ul>
+        </div>
+        <form class="d-flex mb-0 justify-content-end" style="width: 30vw;" id="Search">
+            <select class="form-control" id="brands" name="brands" style="width:7vw; border-radius: 0;">
+                <option>Brand</option>
+            </select>
+            <input class="form-control" type="search" placeholder="Search" id="contents"
+                style="width:22vw; border-radius: 0;" autocomplete="off">
+            <button class="btn btn-success" type="submit" style="border-radius: 0;">Search</button>
+        </form>
+    </nav>
+
+    <h1 class="ml-5 mt-3">Edit Profile</h1>
+    <div class="ml-5 p-0 container">
+        <form id="editUser">
+            <div class="form-group">
+                <label for="editUsername">Username: </label>
+                <input type="text" class="form-control" id="editUsername" value="" autocomplete="off" />
+            </div>
+            <div class="form-group">
+                <label for="editEmail">Email: </label>
+                <input type="text" class="form-control" id="editEmail" autocomplete="off" />
+            </div>
+            <div class="form-group">
+                <label for="editContact">Contact: </label>
+                <input type="text" class="form-control" id="editContact" autocomplete="off" />
+            </div>
+            <div class="form-group">
+                <label for="editPwd">Password </label>
+                <input type="text" class="form-control" id="editPwd" autocomplete="off" />
+            </div>
+            <button type="submit" class="btn btn-success">Edit User</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const baseURL = "http://localhost:3000";
+        const param = new URLSearchParams(window.location.search);
+
+        const token = localStorage.getItem("token");
+        const loggedInUser = parseInt(localStorage.getItem("loggedInUserID"));
+        const role = localStorage.getItem("userRole");
+
+        const brandName = param.get("brand");
+        const searchContents = param.get("contents");
+
+        if (token != null || !(isNaN(loggedInUser)) || role != null) {
+
+            // if role is Admin
+            if (role == "Admin") {
+                const addCategory = `
+    <div class="dropdown-divider"></div>
+    <li><a class="dropdown-item" href="/category/add">Add Category</a></li>
+     `
+
+                $("#categories").append(addCategory);
+            }
+
+            // if role is member / admin
+            const signOut = `
+    <a type="button" id="signOut" class="nav-link btn btn-dark">Log Out</a>
+    `
+
+            const profile = `
+    <a class="nav-link" href="/profile">Profile</a>
+`
+
+
+            $("#profile").append(profile);
+            $("#logged").append(signOut);
+        }
+        else if (token == null || isNaN(loggedInUser) || role == null) {
+            const logInBtn = `
+<a class="nav-link" href="/login">Log In</a>
+`
+
+            $("#logged").append(logInBtn);
+        }
+
+
+        // =======================
+        // NAVBAR REQUESTS
+        // =======================
+
+        // gets all categories for dropdown in navbar
+        axios.get(`${baseURL}/category`)
+            .then((res) => {
+                const categoryArr = res.data
+                categoryArr.forEach((category) => {
+                    const categories = `
+                <li><a class="dropdown-item" href="/category?catId=${category.categoryid}">${category.category}</a></li>
+                `
+                    $("#categories").prepend(categories)
+                });
+            })
+            .catch((err) => {
+                console.log("Error");
+                console.log(err);
+            })
+
+        // gets all distinct brands for select dropdown
+        axios.get(`${baseURL}/brands`)
+            .then((res) => {
+                const productArr = res.data
+                productArr.forEach((product) => {
+                    const productBrand = `
+                    <option value="${product.brand}" >${product.brand}</option>
+                    `
+
+                    $("#brands").append(productBrand);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log("error in operando")
+            })
+
+
+        // search bar
+        $(document).ready((event) => {
+            $("#Search").submit((event) => {
+                const brand = $("#brands").val();
+                const contents = $("#contents").val();
+
+                let redirectURL = `http://localhost:3001/search?brand=${brand}&content=${contents}`
+
+                window.location.assign(redirectURL);
+
+                return false;
+            });
+
+            // logout button 
+            $("#signOut").click(() => {
+                localStorage.clear();
+                location.reload();
+                window.location.href("/");
+            })
+        })
+
+
+        axios.get(`${baseURL}/category`)
+            .then((res) => {
+                const categoryArr = res.data;
+                categoryArr.forEach((category) => {
+                    console.log(category.category);
+                    console.log(category.categoryid)
+                    const checkboxCat = `
+                    <div class="form-check">
+                        <input type="checkbox" id="checkBoxEle" name="checkBoxEle" value="${category.categoryid}">
+                        <label for="checkBoxEle" >${category.category}</label>
+                    </div>
+                    `
+
+                    $('#interestCheckbox').append(checkboxCat);
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log("Error");
+            })
+
+        axios.get(`${baseURL}/users/${loggedInUser}`)
+            .then((res) => {
+                const userInfo = res.data;
+
+                $("#editUsername").val(userInfo.username);
+                $("#editEmail").val(userInfo.email);
+                $("#editContact").val(userInfo.contact);
+                $("#editPwd").val(userInfo.password);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+
+        $("#editUser").submit((event) => {
+            event.preventDefault();
+
+            const requestBody = {
+                username: $("#editUsername").val(),
+                email: $("#editEmail").val(),
+                contact: $("#editContact").val(),
+                password: $("#editPwd").val(),
+            }
+
+            console.log(requestBody);
+
+            axios.put(`${baseURL}/users/${loggedInUser}`, requestBody)
+                .then((res) => {
+                    alert("Updated Successful");
+                    window.location.href = "/profile"
+                })
+                .catch((err) => {
+                    alert("Update Unsuccessful!");
+                    console.log(err);
+                })
+        })
+
+    </script>
+    </script>
+</body>
+
+</html>

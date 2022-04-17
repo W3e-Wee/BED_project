@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center ">
+            <div class="mt-5 col-sm-4 text-center shadow p-3 mb-5 bg-white rounded">
+                <h1>Registration</h1>
+                <form class="mt-4 " id="registration-form">
+                    <div class="message" id="msg"></div>
+                    <div class="form-group text-left">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" autocomplete="off">
+                    </div>
+                    <div class="form-group text-left">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="email" autocomplete="off">
+                    </div>
+                    <div class="form-group text-left">
+                        <label for="contact">Contact</label>
+                        <input type="text" class="form-control" id="contact" autocomplete="off">
+                    </div>
+                    <div class="form-group text-left">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <div class="pt-2">
+                        <a href="/login">Go back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const baseURL = `http://localhost:3000`
+
+        $("#registration-form").submit((event) => {
+            event.preventDefault();
+
+            const requestBody = {
+                username: $("#username").val(),
+                email: $("#email").val(),
+                contact: $("#contact").val(),
+                password: $("#password").val()
+            }
+
+            axios.post(`${baseURL}/users`, requestBody)
+                .then((res) => {
+                    alert("Registartion Successful!");
+                    
+                    window.location.href = "/login";
+                })
+                .catch((err) => {
+                    alert("Registration Unsuccessful! Try again");
+                    console.log(err);
+                })
+        })
+    </script>
+</body>
+
+</html>
